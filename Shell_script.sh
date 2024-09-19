@@ -1,27 +1,24 @@
+crontab -e
+
+0 0 * * * /path/to/your/script.sh
+
+
 #!/bin/bash
 
 # Variables
-URL="<your-url>"
-HDFS_PATH="/user/hadoop/<directory>"
-FILENAME=$(basename $URL)
-TABLE_NAME="<table_name>"
+DATA_URL="https://www2.census.gov/programs-surveys/popest/datasets/2020-2021/state/totals/NST-EST2021-alldata.csv"
+HDFS_DIR="/user/hadoop/pop_data"
+LOCAL_FILE="NST-EST2021-alldata.csv"
 
-# Fetch the data
-wget $URL -O $FILENAME
+# Download data
+wget $DATA_URL -O $LOCAL_FILE
 
-# Store the data in HDFS
-hdfs dfs -put $FILENAME $HDFS_PATH
+# Upload to HDFS
+hadoop fs -mkdir -p $HDFS_DIR
+hadoop fs -put $LOCAL_FILE $HDFS_DIR/
 
-# Hive commands to create table and load data
-hive -e "CREATE TABLE IF NOT EXISTS $TABLE_NAME (
-           <column1> <datatype>,
-           <column2> <datatype>,
-           ...
-         )
-         ROW FORMAT DELIMITED
-         FIELDS TERMINATED BY ','
-         STORED AS TEXTFILE;
-
-         LOAD DATA INPATH '$HDFS_PATH/$FILENAME' INTO TABLE $TABLE_NAME;
-
-         SELECT * FROM $TABLE_NAME LIMIT 10;"
+# Load data into Hive (assumes Hive is configured)
+hive -e "
+  USE pop_data_db;
+  LOAD DATA INPATH '$HDFS_DIR/$LOCAL_FILE' INTO TABLE pop_data;
+"
