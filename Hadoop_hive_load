@@ -1,0 +1,78 @@
+wget https://www2.census.gov/programs-surveys/popest/datasets/2020-2021/state/totals/NST-EST2021-alldata.csv
+
+head -n 10 NST-EST2021-alldata.csv
+
+hadoop fs -mkdir /user/hadoop/pop_data
+
+hadoop fs -put NST-EST2021-alldata.csv /user/hadoop/pop_data
+
+hive
+
+CREATE DATABASE pop_data_db;
+USE pop_data_db;
+
+CREATE TABLE pop_data (
+    SUMLEV INT,
+    REGION INT,
+    DIVISION INT,
+    STATE INT,
+    NAME STRING,
+    ESTIMATESBASE2020 INT,
+    POPESTIMATE2020 INT,
+    POPESTIMATE2021 INT,
+    NPOPCHG_2020 INT,
+    NPOPCHG_2021 INT,
+    BIRTHS2020 INT,
+    BIRTHS2021 INT,
+    DEATHS2020 INT,
+    DEATHS2021 INT,
+    NATURALINC2020 INT,
+    NATURALINC2021 INT,
+    INTERNATIONALMIG2020 INT,
+    INTERNATIONALMIG2021 INT,
+    DOMESTICMIG2020 INT,
+    DOMESTICMIG2021 INT,
+    NETMIG2020 INT,
+    NETMIG2021 INT,
+    RESIDUAL2020 INT,
+    RESIDUAL2021 INT,
+    RBIRTH2021 FLOAT,
+    RDEATH2021 FLOAT,
+    RNATURALINC2021 FLOAT,
+    RINTERNATIONALMIG2021 FLOAT,
+    RDOMESTICMIG2021 FLOAT,
+    RNETMIG2021 FLOAT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+
+LOAD DATA INPATH '/user/hadoop/pop_data/NST-EST2021-alldata.csv' INTO TABLE pop_data;
+
+SELECT * FROM pop_data LIMIT 10;
+
+crontab -e
+
+0 0 * * * /path/to/your/script.sh
+
+
+#!/bin/bash
+
+# Variables
+DATA_URL="https://www2.census.gov/programs-surveys/popest/datasets/2020-2021/state/totals/NST-EST2021-alldata.csv"
+HDFS_DIR="/user/hadoop/pop_data"
+LOCAL_FILE="NST-EST2021-alldata.csv"
+
+# Download data
+wget $DATA_URL -O $LOCAL_FILE
+
+# Upload to HDFS
+hadoop fs -mkdir -p $HDFS_DIR
+hadoop fs -put $LOCAL_FILE $HDFS_DIR/
+
+# Load data into Hive (assumes Hive is configured)
+hive -e "
+  USE pop_data_db;
+  LOAD DATA INPATH '$HDFS_DIR/$LOCAL_FILE' INTO TABLE pop_data;
+"
