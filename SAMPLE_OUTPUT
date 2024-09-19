@@ -1,0 +1,60 @@
+hive> CREATE TABLE pop_data (
+    >     SUMLEV INT,
+    >     REGION INT,
+    >     DIVISION INT,
+    >     STATE INT,
+    >     NAME STRING,
+    >     ESTIMATESBASE2020 INT,
+    >     POPESTIMATE2020 INT,
+    >     POPESTIMATE2021 INT,
+    >     NPOPCHG_2020 INT,
+    >     NPOPCHG_2021 INT,
+    >     BIRTHS2020 INT,
+    >     BIRTHS2021 INT,
+    >     DEATHS2020 INT,
+    >     DEATHS2021 INT,
+    >     NATURALINC2020 INT,
+    >     NATURALINC2021 INT,
+    >     INTERNATIONALMIG2020 INT,
+    >     INTERNATIONALMIG2021 INT,
+    >     DOMESTICMIG2020 INT,
+    >     DOMESTICMIG2021 INT,
+    >     NETMIG2020 INT,
+    >     NETMIG2021 INT,
+    >     RESIDUAL2020 INT,
+    >     RESIDUAL2021 INT,
+    >     RBIRTH2021 FLOAT,
+    >     RDEATH2021 FLOAT,
+    >     RNATURALINC2021 FLOAT,
+    >     RINTERNATIONALMIG2021 FLOAT,
+    >     RDOMESTICMIG2021 FLOAT,
+    >     RNETMIG2021 FLOAT
+    > )
+    > ROW FORMAT DELIMITED
+    > FIELDS TERMINATED BY ','
+    > STORED AS TEXTFILE;
+OK
+Time taken: 0.712 seconds
+hive> show databases;
+OK
+default
+pop_data_db
+Time taken: 0.083 seconds, Fetched: 2 row(s)
+hive> LOAD DATA INPATH '/user/hadoop/pop_data/NST-EST2021-alldata.csv' INTO TABLE pop_data;
+Loading data to table pop_data_db.pop_data
+OK
+Time taken: 0.866 seconds
+hive> SELECT * FROM pop_data LIMIT 10;
+OK
+NULL    NULL    NULL    NULL    NAME    NULL    NULL    NULL    NULL    NULL    NULL    NULL    NULL    NULL    NULL    NULL    NULL    NULL    NULLNULL    NULL    NULL    NULL    NULL    NULL    NULL    NULL    NULL    NULL    NULL
+10      0       0       0       United States   331449281       331501080       331893745       51799   392665  893000  3581986 853448  3433943 39552       148043  12247   244622  0       0       12247   244622  0       0       10.798957       10.352637       0.44631943      0.7374854       0.00.7374854
+20      1       0       0       Northeast Region        57609148        57525633        57159838        -83515  -365795 145067  570592  148129  601644      -3062   -31052  3314    56046   -82743  -389638 -79429  -333592 -1024   -1151   9.950554        10.49207        -0.5415158      0.97738624 -6.7948976       -5.817511
+20      2       0       0       Midwest Region  68985454        68935174        68841444        -50280  -93730  190941  748166  193237  761784  -2296       -13618  1678    37835   -48944  -123103 -47266  -85268  -718    5156    10.860565       11.058248       -0.1976823      0.54922235      -1.7869941  -1.2377717
+20      3       0       0       South Region    126266107       126409007       127225329       142900  816322  345546  1416400 337628  1366769 791849631   6553    112394  127901  657682  134454  770076  528     -3385   11.168835       10.777476       0.39135867      0.886268        5.1860642  6.0723324
+20      4       0       0       West Region     78588572        78631266        78667134        42694   35868   211446  846828  174454  703746  36992       143082  702     38347   3786    -144941 4488    -106594 1214    -620    10.767154       8.94791 1.819243        0.4875701       -1.8428795 -1.3553094
+40      3       6       1       Alabama 5024279 5024803 5039877 524     15074   13410   56320   16148   64868   -2738   -8548   -2      1244    333922136   3337    23380   -75     242     11.191612       12.890226       -1.6986134      0.2472011       4.398749        4.64595
+40      4       9       2       Alaska  733391  732441  732673  -950    232     2407    9280    1384    5641    1023    3639    21      526     -2033       -3879   -2012   -3353   39      -54     12.667956       7.7004247       4.9675317       0.71803284      -5.295151       -4.5771184
+40      4       8       4       Arizona 7151502 7177986 7276316 26484   98330   18036   76497   18340   75665   -304    832     167     4478    26624       93026   26791   97504   -3      -6      10.584669       10.469547       0.11512144      0.6196079       12.871738       13.491346
+40      3       7       5       Arkansas        3011524 3012232 3025891 708     13659   8554    35021   9449    38257   -895    -3236   30      8241588     16016   1618    16840   -15     55      11.599962       12.671819       -1.0718563      0.2729325       5.30496 5.5778923
+Time taken: 1.228 seconds, Fetched: 10 row(s)
+hive> 
